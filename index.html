@@ -7,634 +7,174 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --navy: #1A237E;
-  --navy2: #283593;
-  --teal: #00ACC1;
-  --teal2: #0097A7;
-  --gold: #FDB813;
-  --gold2: #F9A825;
-  --light: #E0F7FA;
-  --pale: #B2EBF2;
-  --white: #ffffff;
-  --muted: #607D8B;
-  --danger: #EF5350;
-  --green: #66BB6A;
+  --navy: #1A237E; --navy2: #283593; --teal: #00ACC1; --teal2: #0097A7;
+  --gold: #FDB813; --gold2: #F9A825; --light: #E0F7FA; --pale: #B2EBF2;
+  --white: #ffffff; --muted: #607D8B; --danger: #EF5350; --green: #66BB6A;
   --radius: 12px;
 }
+body { font-family:'Raleway',sans-serif; background:linear-gradient(150deg,#f5f5f0 0%,#efefea 40%,#f5f5f0 100%); min-height:100vh; color:var(--navy); overflow-x:hidden; }
 
-body {
-  font-family: 'Raleway', sans-serif;
-  background: linear-gradient(150deg, #f5f5f0 0%, #efefea 40%, #f5f5f0 100%);
-  min-height: 100vh;
-  color: var(--navy);
-  overflow-x: hidden;
-}
+header { background:linear-gradient(90deg,var(--navy) 0%,var(--navy2) 100%); padding:14px 20px; text-align:center; position:relative; overflow:hidden; }
+header::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(253,184,19,0.04) 10px,rgba(253,184,19,0.04) 20px); }
+header h1 { font-family:'Cinzel',serif; font-size:clamp(15px,4vw,24px); color:var(--gold); letter-spacing:1px; position:relative; z-index:1; }
+header p { font-size:11px; color:rgba(255,255,255,0.55); margin-top:3px; letter-spacing:3px; text-transform:uppercase; position:relative; z-index:1; }
 
-/* ── HEADER ── */
-header {
-  background: linear-gradient(90deg, var(--navy) 0%, var(--navy2) 100%);
-  padding: 14px 20px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-header::after {
-  content:'';
-  position:absolute;
-  inset:0;
-  background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(253,184,19,0.04) 10px, rgba(253,184,19,0.04) 20px);
-}
-header h1 {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(15px, 4vw, 24px);
-  color: var(--gold);
-  letter-spacing: 1px;
-  position: relative; z-index:1;
-}
-header p {
-  font-size: 11px;
-  color: rgba(255,255,255,0.55);
-  margin-top: 3px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  position: relative; z-index:1;
-}
+.layout { display:grid; grid-template-columns:270px 1fr 290px; min-height:calc(100vh - 60px); }
+.panel { background:rgba(255,255,255,0.92); backdrop-filter:blur(6px); border-right:1px solid rgba(0,0,0,0.07); padding:18px 14px; overflow-y:auto; max-height:calc(100vh - 60px); }
+.panel:last-child { border-right:none; border-left:1px solid rgba(0,0,0,0.07); }
+.panel-title { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:var(--teal); letter-spacing:2.5px; text-transform:uppercase; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px; }
+.center-panel { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:24px 16px 20px; gap:16px; overflow-y:auto; max-height:calc(100vh - 60px); background:#f9f9f6; }
+canvas#wheel { border-radius:50%; box-shadow:0 10px 40px rgba(26,35,126,0.22),0 2px 8px rgba(0,0,0,0.1); max-width:100%; }
 
-/* ── LAYOUT ── */
-.layout {
-  display: grid;
-  grid-template-columns: 270px 1fr 290px;
-  min-height: calc(100vh - 60px);
-}
+.prize-item { background:white; border:1.5px solid rgba(0,0,0,0.09); border-radius:var(--radius); padding:10px 12px; margin-bottom:7px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+.prize-item:hover { border-color:var(--teal); transform:translateX(2px); }
+.prize-item.active { border-color:var(--gold); background:#fffbf0; box-shadow:0 2px 12px rgba(253,184,19,0.2); }
+.prize-item.collapsed { display:none; }
+.prize-item.done { border-color:rgba(102,187,106,0.4); background:#f9fff9; }
+.prize-item.special { border-left:3px solid var(--gold); background:linear-gradient(to right,rgba(253,184,19,0.05),white); }
+.prize-header { display:flex; align-items:center; gap:8px; }
+.prize-num { background:var(--gold); color:var(--navy); font-family:'Cinzel',serif; font-weight:700; font-size:11px; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.prize-num.done-num { background:var(--green); color:white; }
+.prize-name-text { flex:1; color:var(--navy); font-weight:600; font-size:13px; }
+.prize-count-badge { font-size:10px; color:var(--muted); background:rgba(0,172,193,0.1); border-radius:20px; padding:2px 7px; font-weight:600; }
+.prize-count-badge.done { background:rgba(102,187,106,0.15); color:var(--green); }
+.prize-actions { display:none; gap:6px; margin-top:10px; flex-wrap:wrap; }
+.prize-item.active .prize-actions { display:flex; }
+.prize-winners-list { margin-top:8px; font-size:11px; }
+.prize-winner-entry { display:flex; align-items:center; gap:6px; padding:3px 0; border-bottom:1px dashed rgba(0,172,193,0.1); color:var(--navy2); }
+.prize-winner-entry:last-child { border-bottom:none; }
+.pwn { font-weight:700; color:var(--teal2); min-width:18px; font-size:10px; }
+.action-btn { font-family:'Cinzel',serif; font-size:11px; font-weight:700; border:none; border-radius:8px; padding:7px 14px; cursor:pointer; letter-spacing:0.5px; transition:all 0.15s; }
+.btn-edit { background:var(--light); color:var(--navy); border:1px solid var(--pale); }
+.btn-edit:hover { background:var(--pale); }
+.btn-raffle { background:var(--gold); color:var(--navy); box-shadow:0 2px 8px rgba(253,184,19,0.3); }
+.btn-raffle:hover { background:var(--gold2); transform:scale(1.03); }
+.btn-del { background:rgba(239,83,80,0.1); color:var(--danger); border:1px solid rgba(239,83,80,0.2); margin-left:auto; }
+.btn-del:hover { background:rgba(239,83,80,0.2); }
+.prize-edit-row { display:none; gap:6px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+.prize-item.editing .prize-edit-row { display:flex; }
+.prize-item.editing .prize-actions { display:none; }
+.prize-item.editing .prize-header { opacity:0.4; }
+.edit-input { flex:1; min-width:100px; font-family:'Raleway',sans-serif; font-size:13px; padding:6px 10px; border:1.5px solid var(--teal); border-radius:8px; color:var(--navy); background:white; outline:none; }
+.edit-winners-input { width:60px; font-family:'Raleway',sans-serif; font-size:13px; padding:6px 8px; border:1.5px solid var(--teal); border-radius:8px; color:var(--navy); background:white; outline:none; text-align:center; }
+.btn-save { background:var(--teal); color:white; }
+.btn-save:hover { background:var(--teal2); }
+.btn-cancel { background:rgba(96,125,139,0.1); color:var(--muted); border:1px solid rgba(96,125,139,0.2); }
+.add-prize-row { display:flex; flex-direction:column; gap:6px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(0,0,0,0.08); }
+.add-prize-inputs { display:flex; gap:6px; }
+.add-prize-row input { font-family:'Raleway',sans-serif; font-size:13px; padding:8px 12px; border:1px solid rgba(0,0,0,0.12); border-radius:8px; color:var(--navy); background:white; outline:none; transition:border-color 0.15s; }
+.add-prize-row input:focus { border-color:var(--teal); }
+.input-name { flex:1; }
+.input-count { width:70px; text-align:center; }
+.add-btn { font-family:'Cinzel',serif; font-size:12px; font-weight:700; background:var(--teal); color:white; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; }
+.add-btn:hover { background:var(--teal2); }
+.reset-all-btn { width:100%; margin-top:10px; font-family:'Raleway',sans-serif; font-size:12px; font-weight:600; background:rgba(239,83,80,0.08); color:var(--danger); border:1px solid rgba(239,83,80,0.2); border-radius:8px; padding:8px; cursor:pointer; }
+.reset-all-btn:hover { background:rgba(239,83,80,0.14); }
 
-/* ── PANELS ── */
-.panel {
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(6px);
-  border-right: 1px solid rgba(0,0,0,0.07);
-  padding: 18px 14px;
-  overflow-y: auto;
-  max-height: calc(100vh - 60px);
-}
-.panel:last-child { border-right: none; border-left: 1px solid rgba(0,0,0,0.07); }
+.spin-btn { font-family:'Cinzel',serif; font-size:18px; font-weight:900; background:var(--gold); color:var(--navy); border:none; border-radius:50px; padding:16px 52px; cursor:pointer; letter-spacing:2px; transition:transform 0.1s,box-shadow 0.1s; box-shadow:0 4px 20px rgba(253,184,19,0.45); }
+.spin-btn:hover { transform:scale(1.04); box-shadow:0 6px 28px rgba(253,184,19,0.55); }
+.spin-btn:active { transform:scale(0.97); }
+.spin-btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+.no-prize-hint { font-size:13px; color:var(--muted); text-align:center; padding:8px 16px; background:rgba(0,0,0,0.04); border-radius:10px; border:1px dashed rgba(0,0,0,0.12); }
+.rule-box { background:rgba(255,255,255,0.95); border:1px solid rgba(0,0,0,0.09); border-radius:var(--radius); padding:12px 14px; width:100%; max-width:420px; }
+.rule-box-title { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:var(--teal); text-transform:uppercase; margin-bottom:10px; font-weight:700; }
+.rule-options { display:flex; flex-direction:column; gap:6px; }
+.rule-option { display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 8px; border-radius:8px; font-size:12px; transition:background 0.15s; }
+.rule-option:hover { background:rgba(0,172,193,0.06); }
+.rule-option input[type="radio"] { accent-color:var(--teal); width:14px; height:14px; }
+.rule-option span { color:var(--navy); font-weight:500; }
+.spinning-for { font-family:'Cinzel',serif; font-size:12px; color:var(--navy); background:var(--gold); border-radius:20px; padding:5px 14px; letter-spacing:0.5px; display:none; }
+.spinning-for.show { display:block; }
 
-.panel-title {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--teal);
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+#winner-overlay { position:fixed; inset:0; background:rgba(10,15,60,0.96); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer; animation:overlayIn 0.35s ease; }
+#winner-overlay.show { display:flex; }
+@keyframes overlayIn { from{opacity:0;transform:scale(1.04)} to{opacity:1;transform:scale(1)} }
+.overlay-winner-label { font-family:'Cinzel',serif; font-size:clamp(13px,2.5vw,18px); color:rgba(255,255,255,0.55); letter-spacing:5px; text-transform:uppercase; margin-bottom:12px; }
+.overlay-winner-name { font-family:'Cinzel',serif; font-size:clamp(36px,8vw,80px); font-weight:900; color:var(--gold); letter-spacing:2px; line-height:1; text-shadow:0 0 60px rgba(253,184,19,0.4); animation:namePop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.15s both; }
+@keyframes namePop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.overlay-prize-label { font-family:'Raleway',sans-serif; font-size:clamp(14px,2vw,22px); color:var(--teal); margin-top:18px; font-weight:600; letter-spacing:1px; }
+.overlay-dismiss { margin-top:36px; font-size:12px; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; }
+.overlay-confetti { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
 
-/* ── CENTER PANEL ── */
-.center-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 24px 16px 20px;
-  gap: 16px;
-  overflow-y: auto;
-  max-height: calc(100vh - 60px);
-  background: #f9f9f6;
-}
+.tab-row { display:flex; gap:0; background:rgba(0,0,0,0.06); border-radius:10px; padding:3px; margin-bottom:14px; }
+.tab-btn { flex:1; font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; border:none; border-radius:8px; padding:7px 8px; cursor:pointer; background:transparent; color:var(--muted); letter-spacing:0.5px; transition:all 0.15s; }
+.tab-btn.active { background:white; color:var(--navy); box-shadow:0 1px 6px rgba(0,0,0,0.08); }
+.tab-content { display:none; }
+.tab-content.show { display:block; }
+.name-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; margin-bottom:5px; font-size:13px; background:white; border:1px solid rgba(0,0,0,0.08); transition:border-color 0.15s; }
+.name-item:hover { border-color:rgba(0,172,193,0.3); }
+.name-dot { width:8px; height:8px; border-radius:50%; background:var(--teal); flex-shrink:0; }
+.name-dot.excluded { background:var(--muted); opacity:0.3; }
+.name-text { flex:1; color:var(--navy); font-weight:500; }
+.name-text.excluded { opacity:0.4; text-decoration:line-through; }
+.excl-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:11px; padding:2px 6px; border-radius:4px; font-family:'Raleway',sans-serif; font-weight:600; }
+.excl-btn:hover { background:rgba(0,0,0,0.05); }
+.count-badge { display:inline-flex; align-items:center; justify-content:center; background:var(--teal); color:white; font-size:10px; font-weight:700; width:20px; height:20px; border-radius:50%; margin-left:4px; }
 
-canvas#wheel {
-  border-radius: 50%;
-  box-shadow: 0 10px 40px rgba(26,35,126,0.22), 0 2px 8px rgba(0,0,0,0.1);
-  max-width: 100%;
-}
+/* Special raffle groups from Supabase */
+.raffle-group-card { background:white; border:1.5px solid rgba(0,0,0,0.09); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; cursor:pointer; transition:all 0.15s; }
+.raffle-group-card:hover { border-color:var(--gold); transform:translateX(2px); box-shadow:0 2px 10px rgba(253,184,19,0.15); }
+.rg-header { display:flex; align-items:center; gap:10px; }
+.rg-icon { font-size:20px; flex-shrink:0; }
+.rg-info { flex:1; }
+.rg-label { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:var(--navy); }
+.rg-meta { font-size:11px; color:var(--muted); margin-top:2px; }
+.rg-count { background:rgba(0,172,193,0.1); color:var(--teal); font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; white-space:nowrap; }
+.rg-prize { font-size:11px; color:var(--gold2); font-weight:700; margin-top:4px; }
+.rg-load-btn { width:100%; margin-top:10px; font-family:'Cinzel',serif; font-size:12px; font-weight:700; background:var(--navy); color:var(--gold); border:none; border-radius:8px; padding:9px; cursor:pointer; letter-spacing:1px; }
+.rg-load-btn:hover { background:var(--navy2); }
 
-/* ── PRIZE ITEMS ── */
-.prize-item {
-  background: white;
-  border: 1.5px solid rgba(0,0,0,0.09);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  margin-bottom: 7px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-.prize-item:hover { border-color: var(--teal); transform: translateX(2px); }
-.prize-item.active {
-  border-color: var(--gold);
-  background: #fffbf0;
-  box-shadow: 0 2px 12px rgba(253,184,19,0.2);
-}
-.prize-item.collapsed { display: none; }
-.prize-item.done { border-color: rgba(102,187,106,0.4); background: #f9fff9; }
-.prize-item.special { border-left: 3px solid var(--gold); background: linear-gradient(to right, rgba(253,184,19,0.05), white); }
+.special-source-grid { display:flex; flex-direction:column; gap:8px; margin-top:4px; }
+.source-card { background:white; border:1.5px solid rgba(0,0,0,0.09); border-radius:var(--radius); padding:12px 14px; cursor:pointer; transition:all 0.15s; display:flex; align-items:flex-start; gap:10px; }
+.source-card:hover { border-color:var(--teal); transform:translateX(2px); }
+.source-card.active { border-color:var(--gold); background:#fffbf0; }
+.source-icon { font-size:22px; margin-top:1px; }
+.source-info h4 { font-size:13px; font-weight:700; color:var(--navy); }
+.source-info p { font-size:11px; color:var(--muted); margin-top:2px; }
+.source-body { display:none; margin-top:10px; }
+.source-card.active .source-body { display:block; }
+textarea.manual-names { width:100%; font-family:'Raleway',sans-serif; font-size:12px; padding:8px 10px; border:1px solid rgba(0,172,193,0.3); border-radius:8px; color:var(--navy); background:white; resize:vertical; min-height:80px; outline:none; }
+textarea.manual-names:focus { border-color:var(--teal); }
+.load-btn { width:100%; margin-top:8px; font-family:'Cinzel',serif; font-size:12px; font-weight:700; background:var(--navy); color:var(--gold); border:none; border-radius:8px; padding:10px; cursor:pointer; letter-spacing:1px; }
+.load-btn:hover { background:var(--navy2); }
+.supabase-input { width:100%; font-family:'Raleway',sans-serif; font-size:12px; padding:7px 10px; border:1px solid rgba(0,0,0,0.12); border-radius:8px; color:var(--navy); background:white; outline:none; margin-bottom:6px; }
+.supabase-input:focus { border-color:var(--teal); }
+.file-input-wrapper { position:relative; margin-bottom:8px; }
+.file-input-wrapper input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.file-input-btn { width:100%; padding:10px; border:2px dashed rgba(0,172,193,0.35); border-radius:8px; text-align:center; font-size:12px; color:var(--teal); font-weight:600; cursor:pointer; transition:all 0.15s; }
+.file-input-btn:hover { border-color:var(--teal); background:rgba(0,172,193,0.04); }
+.active-source-note { font-size:11px; color:var(--muted); background:rgba(253,184,19,0.08); border-radius:8px; padding:7px 10px; margin-top:10px; text-align:center; border:1px solid rgba(253,184,19,0.2); }
+.confetti-piece { position:absolute; top:-20px; animation:confettiFall linear forwards; }
+@keyframes confettiFall { to{transform:translateY(105vh) rotate(720deg);opacity:0} }
+.empty-state { font-size:12px; color:var(--muted); text-align:center; padding:20px; background:rgba(0,0,0,0.03); border-radius:10px; border:1px dashed rgba(0,0,0,0.12); }
+.divider { height:1px; background:rgba(0,0,0,0.08); margin:12px 0; }
+.section-label { font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600; margin-bottom:7px; }
+.sb-status { font-size:11px; text-align:center; padding:6px; border-radius:8px; margin-top:6px; display:none; }
+.sb-status.ok { background:rgba(102,187,106,0.12); color:#388E3C; border:1px solid rgba(102,187,106,0.3); }
+.sb-status.err { background:rgba(239,83,80,0.08); color:var(--danger); border:1px solid rgba(239,83,80,0.2); }
+.polling-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-right:5px; animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-.prize-header { display: flex; align-items: center; gap: 8px; }
+/* Prize confirm modal */
+#prize-modal { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:8888; display:none; align-items:center; justify-content:center; }
+#prize-modal.show { display:flex; }
+.prize-modal-box { background:white; border-radius:20px; padding:28px 24px; width:90%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+.prize-modal-box h3 { font-family:'Cinzel',serif; font-size:16px; color:var(--navy); margin-bottom:6px; }
+.prize-modal-box p { font-size:12px; color:var(--muted); margin-bottom:16px; }
+.prize-modal-box input { width:100%; font-family:'Raleway',sans-serif; font-size:14px; padding:10px 14px; border:1.5px solid rgba(0,172,193,0.4); border-radius:10px; color:var(--navy); outline:none; margin-bottom:14px; }
+.prize-modal-box input:focus { border-color:var(--teal); }
+.modal-btns { display:flex; gap:10px; }
+.modal-btn { flex:1; font-family:'Cinzel',serif; font-size:13px; font-weight:700; border:none; border-radius:10px; padding:12px; cursor:pointer; }
+.modal-btn-confirm { background:var(--gold); color:var(--navy); }
+.modal-btn-confirm:hover { background:var(--gold2); }
+.modal-btn-cancel { background:rgba(0,0,0,0.06); color:var(--muted); }
 
-.prize-num {
-  background: var(--gold);
-  color: var(--navy);
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  font-size: 11px;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.prize-num.done-num { background: var(--green); color: white; }
-
-.prize-name-text { flex: 1; color: var(--navy); font-weight: 600; font-size: 13px; }
-.prize-count-badge {
-  font-size: 10px;
-  color: var(--muted);
-  background: rgba(0,172,193,0.1);
-  border-radius: 20px;
-  padding: 2px 7px;
-  font-weight: 600;
-}
-.prize-count-badge.done { background: rgba(102,187,106,0.15); color: var(--green); }
-
-.prize-actions {
-  display: none;
-  gap: 6px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-}
-.prize-item.active .prize-actions { display: flex; }
-
-.prize-winners-list {
-  margin-top: 8px;
-  font-size: 11px;
-}
-.prize-winner-entry {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 0;
-  border-bottom: 1px dashed rgba(0,172,193,0.1);
-  color: var(--navy2);
-}
-.prize-winner-entry:last-child { border-bottom: none; }
-.pwn { font-weight: 700; color: var(--teal2); min-width: 18px; font-size: 10px; }
-
-.action-btn {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  padding: 7px 14px;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  transition: all 0.15s;
-}
-.btn-edit { background: var(--light); color: var(--navy); border: 1px solid var(--pale); }
-.btn-edit:hover { background: var(--pale); }
-.btn-raffle { background: var(--gold); color: var(--navy); box-shadow: 0 2px 8px rgba(253,184,19,0.3); }
-.btn-raffle:hover { background: var(--gold2); transform: scale(1.03); }
-.btn-del { background: rgba(239,83,80,0.1); color: var(--danger); border: 1px solid rgba(239,83,80,0.2); margin-left: auto; }
-.btn-del:hover { background: rgba(239,83,80,0.2); }
-
-/* Edit inline */
-.prize-edit-row {
-  display: none;
-  gap: 6px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.prize-item.editing .prize-edit-row { display: flex; }
-.prize-item.editing .prize-actions { display: none; }
-.prize-item.editing .prize-header { opacity: 0.4; }
-
-.edit-input {
-  flex: 1;
-  min-width: 100px;
-  font-family: 'Raleway', sans-serif;
-  font-size: 13px;
-  padding: 6px 10px;
-  border: 1.5px solid var(--teal);
-  border-radius: 8px;
-  color: var(--navy);
-  background: white;
-  outline: none;
-}
-.edit-winners-input {
-  width: 60px;
-  font-family: 'Raleway', sans-serif;
-  font-size: 13px;
-  padding: 6px 8px;
-  border: 1.5px solid var(--teal);
-  border-radius: 8px;
-  color: var(--navy);
-  background: white;
-  outline: none;
-  text-align: center;
-}
-.btn-save { background: var(--teal); color: white; }
-.btn-save:hover { background: var(--teal2); }
-.btn-cancel { background: rgba(96,125,139,0.1); color: var(--muted); border: 1px solid rgba(96,125,139,0.2); }
-
-/* Add prize row */
-.add-prize-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0,0,0,0.08);
-}
-.add-prize-inputs { display: flex; gap: 6px; }
-.add-prize-row input {
-  font-family: 'Raleway', sans-serif;
-  font-size: 13px;
-  padding: 8px 12px;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 8px;
-  color: var(--navy);
-  background: white;
-  outline: none;
-  transition: border-color 0.15s;
-}
-.add-prize-row input:focus { border-color: var(--teal); }
-.input-name { flex: 1; }
-.input-count { width: 70px; text-align: center; }
-.add-btn {
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  font-weight: 700;
-  background: var(--teal);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-.add-btn:hover { background: var(--teal2); }
-
-.reset-all-btn {
-  width: 100%;
-  margin-top: 10px;
-  font-family: 'Raleway', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(239,83,80,0.08);
-  color: var(--danger);
-  border: 1px solid rgba(239,83,80,0.2);
-  border-radius: 8px;
-  padding: 8px;
-  cursor: pointer;
-}
-.reset-all-btn:hover { background: rgba(239,83,80,0.14); }
-
-/* ── SPIN BTN & WINNER REMOVAL ── */
-.spin-btn {
-  font-family: 'Cinzel', serif;
-  font-size: 18px;
-  font-weight: 900;
-  background: var(--gold);
-  color: var(--navy);
-  border: none;
-  border-radius: 50px;
-  padding: 16px 52px;
-  cursor: pointer;
-  letter-spacing: 2px;
-  transition: transform 0.1s, box-shadow 0.1s;
-  box-shadow: 0 4px 20px rgba(253,184,19,0.45);
-}
-.spin-btn:hover { transform: scale(1.04); box-shadow: 0 6px 28px rgba(253,184,19,0.55); }
-.spin-btn:active { transform: scale(0.97); }
-.spin-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-
-.no-prize-hint {
-  font-size: 13px;
-  color: var(--muted);
-  text-align: center;
-  padding: 8px 16px;
-  background: rgba(0,0,0,0.04);
-  border-radius: 10px;
-  border: 1px dashed rgba(0,0,0,0.12);
-}
-
-/* Winner removal rule selector */
-.rule-box {
-  background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(0,0,0,0.09);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  width: 100%;
-  max-width: 420px;
-}
-.rule-box-title {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--teal);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-.rule-options { display: flex; flex-direction: column; gap: 6px; }
-.rule-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  transition: background 0.15s;
-}
-.rule-option:hover { background: rgba(0,172,193,0.06); }
-.rule-option input[type="radio"] { accent-color: var(--teal); width: 14px; height: 14px; }
-.rule-option span { color: var(--navy); font-weight: 500; }
-
-/* ── SPINNING PRIZE INDICATOR ── */
-.spinning-for {
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  color: var(--navy);
-  background: var(--gold);
-  border-radius: 20px;
-  padding: 5px 14px;
-  letter-spacing: 0.5px;
-  display: none;
-}
-.spinning-for.show { display: block; }
-
-/* ── FULLSCREEN OVERLAY ── */
-#winner-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 15, 60, 0.96);
-  z-index: 9999;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  animation: overlayIn 0.35s ease;
-}
-#winner-overlay.show { display: flex; }
-@keyframes overlayIn {
-  from { opacity: 0; transform: scale(1.04); }
-  to { opacity: 1; transform: scale(1); }
-}
-.overlay-winner-label {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(13px, 2.5vw, 18px);
-  color: rgba(255,255,255,0.55);
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.overlay-winner-name {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(36px, 8vw, 80px);
-  font-weight: 900;
-  color: var(--gold);
-  letter-spacing: 2px;
-  line-height: 1;
-  text-shadow: 0 0 60px rgba(253,184,19,0.4);
-  animation: namePop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.15s both;
-}
-@keyframes namePop {
-  from { transform: scale(0.5); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.overlay-prize-label {
-  font-family: 'Raleway', sans-serif;
-  font-size: clamp(14px, 2vw, 22px);
-  color: var(--teal);
-  margin-top: 18px;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-.overlay-dismiss {
-  margin-top: 36px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.3);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-.overlay-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-
-/* ── ATTENDEES / RIGHT PANEL ── */
-.tab-row {
-  display: flex;
-  gap: 0;
-  background: rgba(0,0,0,0.06);
-  border-radius: 10px;
-  padding: 3px;
-  margin-bottom: 14px;
-}
-.tab-btn {
-  flex: 1;
-  font-family: 'Raleway', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  padding: 7px 8px;
-  cursor: pointer;
-  background: transparent;
-  color: var(--muted);
-  letter-spacing: 0.5px;
-  transition: all 0.15s;
-}
-.tab-btn.active { background: white; color: var(--navy); box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
-
-.tab-content { display: none; }
-.tab-content.show { display: block; }
-
-.name-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-bottom: 5px;
-  font-size: 13px;
-  background: white;
-  border: 1px solid rgba(0,0,0,0.08);
-  transition: border-color 0.15s;
-}
-.name-item:hover { border-color: rgba(0,172,193,0.3); }
-.name-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
-.name-dot.excluded { background: var(--muted); opacity: 0.3; }
-.name-text { flex: 1; color: var(--navy); font-weight: 500; }
-.name-text.excluded { opacity: 0.4; text-decoration: line-through; }
-.excl-btn {
-  background: none; border: none; color: var(--muted); cursor: pointer;
-  font-size: 11px; padding: 2px 6px; border-radius: 4px;
-  font-family: 'Raleway', sans-serif; font-weight: 600;
-}
-.excl-btn:hover { background: rgba(0,0,0,0.05); }
-
-.count-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--teal);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  margin-left: 4px;
-}
-
-/* Special raffle tab */
-.special-source-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 4px;
-}
-.source-card {
-  background: white;
-  border: 1.5px solid rgba(0,0,0,0.09);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-.source-card:hover { border-color: var(--teal); transform: translateX(2px); }
-.source-card.active { border-color: var(--gold); background: #fffbf0; }
-.source-icon { font-size: 22px; margin-top: 1px; }
-.source-info h4 { font-size: 13px; font-weight: 700; color: var(--navy); }
-.source-info p { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-.source-body { display: none; margin-top: 10px; }
-.source-card.active .source-body { display: block; }
-
-textarea.manual-names {
-  width: 100%;
-  font-family: 'Raleway', sans-serif;
-  font-size: 12px;
-  padding: 8px 10px;
-  border: 1px solid rgba(0,172,193,0.3);
-  border-radius: 8px;
-  color: var(--navy);
-  background: white;
-  resize: vertical;
-  min-height: 80px;
-  outline: none;
-}
-textarea.manual-names:focus { border-color: var(--teal); }
-
-.load-btn {
-  width: 100%;
-  margin-top: 8px;
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  font-weight: 700;
-  background: var(--navy);
-  color: var(--gold);
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  letter-spacing: 1px;
-}
-.load-btn:hover { background: var(--navy2); }
-
-.supabase-input {
-  width: 100%;
-  font-family: 'Raleway', sans-serif;
-  font-size: 12px;
-  padding: 7px 10px;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 8px;
-  color: var(--navy);
-  background: white;
-  outline: none;
-  margin-bottom: 6px;
-}
-.supabase-input:focus { border-color: var(--teal); }
-
-.file-input-wrapper {
-  position: relative;
-  margin-bottom: 8px;
-}
-.file-input-wrapper input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer;
-}
-.file-input-btn {
-  width: 100%;
-  padding: 10px;
-  border: 2px dashed rgba(0,172,193,0.35);
-  border-radius: 8px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--teal);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.file-input-btn:hover { border-color: var(--teal); background: rgba(0,172,193,0.04); }
-
-.active-source-note {
-  font-size: 11px;
-  color: var(--muted);
-  background: rgba(253,184,19,0.08);
-  border-radius: 8px;
-  padding: 7px 10px;
-  margin-top: 10px;
-  text-align: center;
-  border: 1px solid rgba(253,184,19,0.2);
-}
-
-/* ── CONFETTI ── */
-.confetti-piece {
-  position: absolute;
-  top: -20px;
-  animation: confettiFall linear forwards;
-}
-@keyframes confettiFall {
-  to { transform: translateY(105vh) rotate(720deg); opacity: 0; }
-}
-
-/* ── EMPTY STATE ── */
-.empty-state {
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
-  padding: 20px;
-  background: rgba(0,0,0,0.03);
-  border-radius: 10px;
-  border: 1px dashed rgba(0,0,0,0.12);
-}
-
-/* ── RESPONSIVE ── */
-@media (max-width: 960px) {
-  .layout { grid-template-columns: 1fr; }
-  .panel { max-height: none; border-right: none; border-left: none; border-bottom: 1px solid rgba(0,172,193,0.15); }
-  .panel:last-child { border-left: none; }
-  canvas#wheel { width: min(90vw, 340px) !important; height: min(90vw, 340px) !important; }
-}
-
-/* ── MISC ── */
-.divider { height: 1px; background: rgba(0,0,0,0.08); margin: 12px 0; }
-.section-label {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 7px;
+@media (max-width:960px) {
+  .layout { grid-template-columns:1fr; }
+  .panel { max-height:none; border-right:none; border-left:none; border-bottom:1px solid rgba(0,172,193,0.15); }
+  .panel:last-child { border-left:none; }
+  canvas#wheel { width:min(90vw,340px)!important; height:min(90vw,340px)!important; }
 }
 </style>
 </head>
@@ -647,16 +187,15 @@ textarea.manual-names:focus { border-color: var(--teal); }
 
 <div class="layout">
 
-  <!-- ═══ LEFT PANEL: PRIZES ═══ -->
+  <!-- LEFT: PRIZES -->
   <div class="panel" id="prizes-panel">
     <div class="panel-title">🏆 Prizes</div>
     <div id="prize-list"></div>
-
     <div class="add-prize-row">
       <div class="section-label">Add New Prize</div>
       <input class="input-name" id="prize-input" placeholder="Prize name…" style="width:100%;margin-bottom:6px;" />
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
-        <input class="input-count" id="prize-count" type="number" min="1" value="1" placeholder="# winners" title="Number of winners" style="flex:1;" />
+        <input class="input-count" id="prize-count" type="number" min="1" value="1" placeholder="# winners" style="flex:1;" />
         <button class="add-btn" onclick="addPrize()" style="flex:2;">+ Add Prize</button>
       </div>
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 10px;background:rgba(253,184,19,0.08);border:1px solid rgba(253,184,19,0.3);border-radius:8px;">
@@ -664,19 +203,14 @@ textarea.manual-names:focus { border-color: var(--teal); }
         <span style="font-size:12px;font-weight:600;color:var(--navy);">⭐ Special Raffle prize</span>
         <span style="font-size:11px;color:var(--muted);margin-left:auto;">uses Special list</span>
       </label>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Winner count: how many names to draw for this prize</div>
     </div>
-
     <button class="reset-all-btn" onclick="resetAll()">Reset All Winners</button>
   </div>
 
-  <!-- ═══ CENTER PANEL: WHEEL ═══ -->
+  <!-- CENTER: WHEEL -->
   <div class="center-panel">
     <div class="spinning-for" id="spinning-for">Select a prize to raffle</div>
-
     <canvas id="wheel" width="400" height="400"></canvas>
-
-    <!-- Winner removal rule -->
     <div class="rule-box">
       <div class="rule-box-title">Winner Removal Rule</div>
       <div class="rule-options">
@@ -694,12 +228,11 @@ textarea.manual-names:focus { border-color: var(--teal); }
         </label>
       </div>
     </div>
-
-    <div id="no-prize-hint" class="no-prize-hint">👈 Click a prize on the left, then tap Raffle Now to spin</div>
+    <div id="no-prize-hint" class="no-prize-hint">👈 Click a prize, then tap Raffle Now to spin</div>
     <button class="spin-btn" id="spin-btn" onclick="spin()" style="display:none">SPIN</button>
   </div>
 
-  <!-- ═══ RIGHT PANEL: ATTENDEES ═══ -->
+  <!-- RIGHT: ATTENDEES + SPECIAL RAFFLE -->
   <div class="panel">
     <div class="panel-title">
       👥 Attendees
@@ -715,34 +248,42 @@ textarea.manual-names:focus { border-color: var(--teal); }
     <div class="tab-content show" id="tab-attendees">
       <div id="empty-state" class="empty-state">No attendees loaded yet.</div>
       <div id="name-list"></div>
-
       <div class="divider"></div>
-      <div class="section-label">Load Attendance (Supabase)</div>
+      <div class="section-label">Load from Supabase</div>
       <input class="supabase-input" id="sb-url" placeholder="Supabase Project URL" />
-      <input class="supabase-input" id="sb-key" placeholder="Supabase Anon Key" />
-      <input class="supabase-input" id="sb-clan" placeholder="Clan ID" />
+      <input class="supabase-input" id="sb-key" placeholder="Supabase Anon Key" type="password" />
       <button class="load-btn" onclick="loadFromSupabase()">Load Attendance</button>
+      <div class="sb-status" id="sb-attend-status"></div>
     </div>
 
     <!-- SPECIAL RAFFLE TAB -->
     <div class="tab-content" id="tab-special">
-      <div id="active-source-note" class="active-source-note" style="display:none"></div>
-      <div id="special-name-list" style="margin-bottom:10px;"></div>
+
+      <!-- Groups from Supabase (uploaded from app) -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="section-label" style="margin-bottom:0;">Groups from App</div>
+        <span id="poll-indicator" style="font-size:10px;color:var(--muted);display:none;">
+          <span class="polling-dot"></span>Live
+        </span>
+      </div>
+      <div id="raffle-groups-list">
+        <div class="empty-state">No groups uploaded from app yet.<br>Upload from the Raffle tab in Admin Panel.</div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">Manual Options</div>
 
       <div class="special-source-grid">
-        <!-- Option 1: Attendance list -->
         <div class="source-card" id="src-attendance" onclick="toggleSource('attendance')">
           <div class="source-icon">📋</div>
           <div class="source-info">
-            <h4>Load from Attendance</h4>
-            <p>Use the scanned attendance list</p>
+            <h4>Use Attendance List</h4>
+            <p>Load the scanned attendance as special</p>
             <div class="source-body">
               <button class="load-btn" style="margin-top:8px" onclick="event.stopPropagation();useAttendanceForSpecial()">Use Attendance List</button>
             </div>
           </div>
         </div>
-
-        <!-- Option 2: File upload -->
         <div class="source-card" id="src-file" onclick="toggleSource('file')">
           <div class="source-icon">📁</div>
           <div class="source-info" style="width:100%">
@@ -756,8 +297,6 @@ textarea.manual-names:focus { border-color: var(--teal); }
             </div>
           </div>
         </div>
-
-        <!-- Option 3: Type names -->
         <div class="source-card" id="src-type" onclick="toggleSource('type')">
           <div class="source-icon">✏️</div>
           <div class="source-info" style="width:100%">
@@ -770,12 +309,14 @@ textarea.manual-names:focus { border-color: var(--teal); }
           </div>
         </div>
       </div>
-    </div>
 
+      <div id="active-source-note" class="active-source-note" style="display:none;margin-top:10px;"></div>
+      <div id="special-name-list" style="margin-top:8px;"></div>
+    </div>
   </div>
 </div>
 
-<!-- ═══ FULLSCREEN WINNER OVERLAY ═══ -->
+<!-- WINNER OVERLAY -->
 <div id="winner-overlay" onclick="dismissOverlay()">
   <div class="overlay-confetti" id="overlay-confetti"></div>
   <div class="overlay-winner-label">🎉 Winner 🎉</div>
@@ -784,94 +325,235 @@ textarea.manual-names:focus { border-color: var(--teal); }
   <div class="overlay-dismiss">Tap anywhere to continue</div>
 </div>
 
+<!-- PRIZE CONFIRM MODAL (for special raffle groups) -->
+<div id="prize-modal">
+  <div class="prize-modal-box">
+    <h3>🏆 Set Prize for this Raffle</h3>
+    <p id="prize-modal-group-name">Group: Kids Special</p>
+    <input type="text" id="prize-modal-input" placeholder="Enter prize name (e.g. School Supplies)" />
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closePrizeModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmGroupRaffle()">Start Raffle</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let attendees = [];       // main attendance list
-let specialNames = [];    // special raffle list (could be same or different)
-let useSpecial = false;   // whether special raffle names are loaded
-let excluded = new Set(); // names to skip in ATTENDEES tab
-let prizes = [];          // [{name, maxWinners, winners:[]}]
+let attendees = [];
+let specialNames = [];
+let useSpecial = false;
+let excluded = new Set();
+let prizes = [];
 let spinning = false;
 let currentAngle = 0;
 let activePrizeIdx = null;
-let winnerRule = 'any';   // 'any' | 'same' | 'keep'
+let winnerRule = 'any';
 let animFrame;
+let sbUrl = '', sbKey = '';
+let pollInterval = null;
+let pendingGroupNames = [];
+let pendingGroupLabel = '';
 
-const COLORS = [
-  '#00ACC1','#1A237E','#FDB813','#4DD0E1','#283593',
-  '#F9A825','#0097A7','#303F9F','#FFB300','#26C6DA',
-  '#006064','#1565C0','#E65100','#00838F','#1A237E'
-];
+const COLORS = ['#00ACC1','#1A237E','#FDB813','#4DD0E1','#283593','#F9A825','#0097A7','#303F9F','#FFB300','#26C6DA','#006064','#1565C0','#E65100','#00838F','#1A237E'];
 
-// ══════════════════════════════════════════════
-//  PERSISTENCE
-// ══════════════════════════════════════════════
+const FILTER_ICONS = {
+  'age_kids': '👶',
+  'age_seniors': '👴',
+  'custom_age': '🎂',
+  'descendants': '🌳',
+  'manual': '✏️',
+  'all': '👥'
+};
+
+// ── PERSISTENCE ──
 function save() {
   try {
-    localStorage.setItem('rf2_attendees', JSON.stringify(attendees));
-    localStorage.setItem('rf2_excluded', JSON.stringify([...excluded]));
-    localStorage.setItem('rf2_prizes', JSON.stringify(prizes));
-    localStorage.setItem('rf2_rule', winnerRule);
-    localStorage.setItem('rf2_special', JSON.stringify(specialNames));
-    localStorage.setItem('rf2_useSpecial', useSpecial ? '1' : '0');
+    localStorage.setItem('rf3_attendees', JSON.stringify(attendees));
+    localStorage.setItem('rf3_excluded', JSON.stringify([...excluded]));
+    localStorage.setItem('rf3_prizes', JSON.stringify(prizes));
+    localStorage.setItem('rf3_rule', winnerRule);
+    localStorage.setItem('rf3_special', JSON.stringify(specialNames));
+    localStorage.setItem('rf3_useSpecial', useSpecial ? '1' : '0');
+    localStorage.setItem('rf3_sbUrl', sbUrl);
+    localStorage.setItem('rf3_sbKey', sbKey);
   } catch(e) {}
 }
 
 function loadState() {
   try {
-    const a = localStorage.getItem('rf2_attendees');
-    const e = localStorage.getItem('rf2_excluded');
-    const p = localStorage.getItem('rf2_prizes');
-    const r = localStorage.getItem('rf2_rule');
-    const s = localStorage.getItem('rf2_special');
-    const us = localStorage.getItem('rf2_useSpecial');
+    const a = localStorage.getItem('rf3_attendees');
+    const e = localStorage.getItem('rf3_excluded');
+    const p = localStorage.getItem('rf3_prizes');
+    const r = localStorage.getItem('rf3_rule');
+    const s = localStorage.getItem('rf3_special');
+    const us = localStorage.getItem('rf3_useSpecial');
+    const u = localStorage.getItem('rf3_sbUrl');
+    const k = localStorage.getItem('rf3_sbKey');
     if (a) attendees = JSON.parse(a);
     if (e) excluded = new Set(JSON.parse(e));
     if (p) prizes = JSON.parse(p);
-    if (r) { winnerRule = r; document.querySelector(`input[name="rule"][value="${r}"]`).checked = true; }
+    if (r) { winnerRule = r; const el = document.querySelector(`input[name="rule"][value="${r}"]`); if(el) el.checked=true; }
     if (s) specialNames = JSON.parse(s);
     if (us) useSpecial = us === '1';
+    if (u) { sbUrl = u; document.getElementById('sb-url').value = u; }
+    if (k) { sbKey = k; document.getElementById('sb-key').value = k; }
+    if (sbUrl && sbKey) startPolling();
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════
-//  PRIZES
-// ══════════════════════════════════════════════
-function renderPrizes() {
-  const list = document.getElementById('prize-list');
-  if (prizes.length === 0) {
-    list.innerHTML = '<div class="empty-state">No prizes yet. Add one below!</div>';
+// ── SUPABASE ATTENDANCE ──
+async function loadFromSupabase() {
+  sbUrl = document.getElementById('sb-url').value.trim();
+  sbKey = document.getElementById('sb-key').value.trim();
+  const statusEl = document.getElementById('sb-attend-status');
+  if (!sbUrl || !sbKey) { showStatus(statusEl, 'Please fill in Supabase URL and Key.', false); return; }
+  try {
+    const res = await fetch(`${sbUrl}/rest/v1/attendance?select=member_name`, {
+      headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+    });
+    const data = await res.json();
+    if (!Array.isArray(data)) { showStatus(statusEl, 'Could not load. Check credentials.', false); return; }
+    attendees = [...new Set(data.map(r => r.member_name).filter(Boolean))];
+    excluded.clear();
+    renderNames();
+    save();
+    showStatus(statusEl, `✅ Loaded ${attendees.length} attendees.`, true);
+    startPolling();
+  } catch(e) {
+    showStatus(statusEl, 'Error: ' + e.message, false);
+  }
+}
+
+function showStatus(el, msg, ok) {
+  el.textContent = msg;
+  el.className = 'sb-status ' + (ok ? 'ok' : 'err');
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+// ── SUPABASE POLLING FOR RAFFLE GROUPS ──
+function startPolling() {
+  if (!sbUrl || !sbKey) return;
+  document.getElementById('poll-indicator').style.display = 'inline-flex';
+  if (pollInterval) clearInterval(pollInterval);
+  fetchRaffleGroups();
+  pollInterval = setInterval(fetchRaffleGroups, 8000);
+}
+
+async function fetchRaffleGroups() {
+  if (!sbUrl || !sbKey) return;
+  try {
+    const res = await fetch(`${sbUrl}/rest/v1/raffle_lists?select=*&order=created_at.desc`, {
+      headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` }
+    });
+    const data = await res.json();
+    if (!Array.isArray(data)) return;
+    renderRaffleGroups(data);
+  } catch(e) {}
+}
+
+function renderRaffleGroups(groups) {
+  const container = document.getElementById('raffle-groups-list');
+  if (groups.length === 0) {
+    container.innerHTML = '<div class="empty-state">No groups uploaded from app yet.<br>Upload from the Raffle tab in Admin Panel.</div>';
     return;
   }
+  container.innerHTML = groups.map(g => {
+    const names = Array.isArray(g.names) ? g.names : JSON.parse(g.names || '[]');
+    const icon = FILTER_ICONS[g.filter_type] || '🎯';
+    const prizeHtml = g.prize_name ? `<div class="rg-prize">🏆 Prize: ${g.prize_name}</div>` : '';
+    return `
+      <div class="raffle-group-card" onclick="openGroupRaffle('${g.id}','${escQ(g.label)}',${JSON.stringify(names)},'${escQ(g.prize_name||'')}')">
+        <div class="rg-header">
+          <div class="rg-icon">${icon}</div>
+          <div class="rg-info">
+            <div class="rg-label">${g.label}</div>
+            <div class="rg-meta">${g.filter_type || 'custom'} · uploaded ${timeAgo(g.created_at)}</div>
+            ${prizeHtml}
+          </div>
+          <div class="rg-count">${names.length} names</div>
+        </div>
+        <button class="rg-load-btn" onclick="event.stopPropagation();openGroupRaffle('${g.id}','${escQ(g.label)}',${JSON.stringify(names)},'${escQ(g.prize_name||'')}')">
+          Load to Wheel
+        </button>
+      </div>
+    `;
+  }).join('');
+}
 
+function escQ(str) { return (str||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+function timeAgo(iso) {
+  if (!iso) return '';
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+// ── PRIZE MODAL for group raffle ──
+function openGroupRaffle(id, label, names, existingPrize) {
+  pendingGroupNames = names;
+  pendingGroupLabel = label;
+  document.getElementById('prize-modal-group-name').textContent = `Group: ${label} (${names.length} names)`;
+  document.getElementById('prize-modal-input').value = existingPrize || '';
+  document.getElementById('prize-modal').classList.add('show');
+  setTimeout(() => document.getElementById('prize-modal-input').focus(), 100);
+}
+
+function closePrizeModal() {
+  document.getElementById('prize-modal').classList.remove('show');
+}
+
+function confirmGroupRaffle() {
+  const prizeName = document.getElementById('prize-modal-input').value.trim() || pendingGroupLabel + ' Prize';
+  closePrizeModal();
+  specialNames = [...pendingGroupNames];
+  useSpecial = true;
+  updateActiveSourceNote();
+  drawWheel();
+  const existing = prizes.findIndex(p => p.name === prizeName);
+  if (existing === -1) {
+    prizes.push({ name: prizeName, maxWinners: 1, winners: [], isSpecial: true });
+    activePrizeIdx = prizes.length - 1;
+  } else {
+    activePrizeIdx = existing;
+  }
+  renderPrizes();
+  save();
+  const sf = document.getElementById('spinning-for');
+  sf.textContent = '⭐ ' + prizeName;
+  sf.style.background = '#1A237E';
+  sf.style.color = '#FDB813';
+  sf.classList.add('show');
+  document.getElementById('spin-btn').style.display = 'block';
+  document.getElementById('no-prize-hint').style.display = 'none';
+  switchTab('attendees');
+}
+
+// ── PRIZES ──
+function renderPrizes() {
+  const list = document.getElementById('prize-list');
+  if (prizes.length === 0) { list.innerHTML = '<div class="empty-state">No prizes yet. Add one below!</div>'; return; }
   list.innerHTML = prizes.map((p, i) => {
     const done = p.winners.length >= p.maxWinners;
     const isActive = activePrizeIdx === i;
     const collapsed = activePrizeIdx !== null && !isActive;
-
-    const winnersHtml = p.winners.map((w, wi) => `
-      <div class="prize-winner-entry">
-        <span class="pwn">${wi+1}.</span>
-        <span>${w}</span>
-      </div>
-    `).join('');
-
+    const winnersHtml = p.winners.map((w, wi) => `<div class="prize-winner-entry"><span class="pwn">${wi+1}.</span><span>${w}</span></div>`).join('');
     return `
-      <div class="prize-item ${isActive ? 'active' : ''} ${collapsed ? 'collapsed' : ''} ${done ? 'done' : ''} ${p.isSpecial ? 'special' : ''}"
-           id="prize-item-${i}" onclick="selectPrize(${i})">
+      <div class="prize-item ${isActive?'active':''} ${collapsed?'collapsed':''} ${done?'done':''} ${p.isSpecial?'special':''}" id="prize-item-${i}" onclick="selectPrize(${i})">
         <div class="prize-header">
-          <div class="prize-num ${done ? 'done-num' : ''}">${done ? '✓' : i+1}</div>
+          <div class="prize-num ${done?'done-num':''}">${done?'✓':i+1}</div>
           <div class="prize-name-text">${p.name}</div>
-          ${p.isSpecial ? `<span style="font-size:10px;background:#FDB813;color:#1A237E;font-weight:700;border-radius:20px;padding:2px 7px;letter-spacing:0.5px;flex-shrink:0;">⭐ SPECIAL</span>` : ''}
-          <div class="prize-count-badge ${done ? 'done' : ''}">${p.winners.length}/${p.maxWinners}</div>
+          ${p.isSpecial?'<span style="font-size:10px;background:#FDB813;color:#1A237E;font-weight:700;border-radius:20px;padding:2px 7px;flex-shrink:0;">⭐ SPECIAL</span>':''}
+          <div class="prize-count-badge ${done?'done':''}">${p.winners.length}/${p.maxWinners}</div>
         </div>
-        ${p.winners.length > 0 ? `<div class="prize-winners-list">${winnersHtml}</div>` : ''}
+        ${p.winners.length>0?`<div class="prize-winners-list">${winnersHtml}</div>`:''}
         <div class="prize-actions">
           <button class="action-btn btn-edit" onclick="event.stopPropagation();startEdit(${i})">Edit</button>
-          <button class="action-btn btn-raffle" onclick="event.stopPropagation();startRaffle(${i})" ${done ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>
-            ${done ? '✓ Done' : 'Raffle Now'}
+          <button class="action-btn btn-raffle" onclick="event.stopPropagation();startRaffle(${i})" ${done?'disabled style="opacity:0.4;cursor:not-allowed"':''}>
+            ${done?'✓ Done':'Raffle Now'}
           </button>
           <button class="action-btn btn-del" onclick="event.stopPropagation();deletePrize(${i})">Delete</button>
         </div>
@@ -879,7 +561,7 @@ function renderPrizes() {
           <input class="edit-input" id="edit-name-${i}" value="${p.name}" placeholder="Prize name" />
           <input class="edit-winners-input" id="edit-count-${i}" type="number" min="1" value="${p.maxWinners}" />
           <label style="width:100%;display:flex;align-items:center;gap:6px;cursor:pointer;padding:5px 8px;background:rgba(253,184,19,0.08);border:1px solid rgba(253,184,19,0.25);border-radius:7px;margin-top:2px;">
-            <input type="checkbox" id="edit-special-${i}" ${p.isSpecial ? 'checked' : ''} style="accent-color:#FDB813;width:14px;height:14px;" />
+            <input type="checkbox" id="edit-special-${i}" ${p.isSpecial?'checked':''} style="accent-color:#FDB813;width:14px;height:14px;" />
             <span style="font-size:11px;font-weight:600;color:var(--navy);">⭐ Special Raffle prize</span>
           </label>
           <div style="display:flex;gap:6px;margin-top:2px;width:100%;">
@@ -887,8 +569,7 @@ function renderPrizes() {
             <button class="action-btn btn-cancel" onclick="cancelEdit(${i})" style="flex:1;">✕ Cancel</button>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
@@ -898,436 +579,225 @@ function addPrize() {
   const isSpecial = document.getElementById('prize-is-special').checked;
   const name = nameInp.value.trim();
   if (!name) return;
-  const maxWinners = Math.max(1, parseInt(countInp.value) || 1);
-  prizes.push({ name, maxWinners, winners: [], isSpecial });
-  nameInp.value = '';
-  countInp.value = 1;
-  document.getElementById('prize-is-special').checked = false;
-  renderPrizes();
-  save();
+  prizes.push({ name, maxWinners: Math.max(1,parseInt(countInp.value)||1), winners: [], isSpecial });
+  nameInp.value=''; countInp.value=1; document.getElementById('prize-is-special').checked=false;
+  renderPrizes(); save();
 }
-
-document.getElementById('prize-input').addEventListener('keydown', e => { if (e.key === 'Enter') addPrize(); });
+document.getElementById('prize-input').addEventListener('keydown', e => { if(e.key==='Enter') addPrize(); });
 
 function deletePrize(i) {
   if (!confirm(`Delete "${prizes[i].name}"?`)) return;
-  prizes.splice(i, 1);
-  if (activePrizeIdx === i) deselect();
-  else if (activePrizeIdx > i) activePrizeIdx--;
-  renderPrizes();
-  save();
+  prizes.splice(i,1);
+  if (activePrizeIdx===i) deselect(); else if (activePrizeIdx>i) activePrizeIdx--;
+  renderPrizes(); save();
 }
 
 function selectPrize(i) {
-  if (activePrizeIdx === i) {
-    deselect(); return;
-  }
-  activePrizeIdx = i;
-  renderPrizes();
-  document.getElementById('spin-btn').style.display = 'block';
-  document.getElementById('no-prize-hint').style.display = 'none';
-  const sf = document.getElementById('spinning-for');
-  const prize = prizes[i];
-  const typeLabel = prize.isSpecial ? '⭐ Special: ' : '🏆 ';
-  sf.textContent = typeLabel + prize.name;
-  sf.style.background = prize.isSpecial ? '#1A237E' : 'var(--gold)';
-  sf.style.color = prize.isSpecial ? '#FDB813' : 'var(--navy)';
-  sf.classList.add('show');
-  drawWheel();
+  if (activePrizeIdx===i) { deselect(); return; }
+  activePrizeIdx=i; renderPrizes();
+  document.getElementById('spin-btn').style.display='block';
+  document.getElementById('no-prize-hint').style.display='none';
+  const sf=document.getElementById('spinning-for');
+  const p=prizes[i];
+  sf.textContent=(p.isSpecial?'⭐ Special: ':'🏆 ')+p.name;
+  sf.style.background=p.isSpecial?'#1A237E':'var(--gold)';
+  sf.style.color=p.isSpecial?'#FDB813':'var(--navy)';
+  sf.classList.add('show'); drawWheel();
 }
 
 function deselect() {
-  activePrizeIdx = null;
-  renderPrizes();
-  document.getElementById('spin-btn').style.display = 'none';
-  document.getElementById('no-prize-hint').style.display = 'block';
+  activePrizeIdx=null; renderPrizes();
+  document.getElementById('spin-btn').style.display='none';
+  document.getElementById('no-prize-hint').style.display='block';
   document.getElementById('spinning-for').classList.remove('show');
 }
 
-function startEdit(i) {
-  const item = document.getElementById(`prize-item-${i}`);
-  item.classList.add('editing');
-  setTimeout(() => document.getElementById(`edit-name-${i}`).focus(), 50);
-}
-
+function startEdit(i) { document.getElementById(`prize-item-${i}`).classList.add('editing'); setTimeout(()=>document.getElementById(`edit-name-${i}`).focus(),50); }
 function saveEdit(i) {
-  const name = document.getElementById(`edit-name-${i}`).value.trim();
-  const count = Math.max(1, parseInt(document.getElementById(`edit-count-${i}`).value) || 1);
-  const isSpecial = document.getElementById(`edit-special-${i}`).checked;
-  if (!name) return;
-  prizes[i].name = name;
-  prizes[i].maxWinners = count;
-  prizes[i].isSpecial = isSpecial;
-  renderPrizes();
-  save();
+  const name=document.getElementById(`edit-name-${i}`).value.trim();
+  const count=Math.max(1,parseInt(document.getElementById(`edit-count-${i}`).value)||1);
+  const isSpecial=document.getElementById(`edit-special-${i}`).checked;
+  if(!name) return;
+  prizes[i].name=name; prizes[i].maxWinners=count; prizes[i].isSpecial=isSpecial;
+  renderPrizes(); save();
 }
-
-function cancelEdit(i) {
-  renderPrizes();
-}
-
-function startRaffle(i) {
-  selectPrize(i);
-  setTimeout(() => spin(), 100);
-}
-
+function cancelEdit(i) { renderPrizes(); }
+function startRaffle(i) { selectPrize(i); setTimeout(()=>spin(),100); }
 function resetAll() {
-  if (!confirm('Reset all winners? This cannot be undone.')) return;
-  prizes.forEach(p => { p.winners = []; });
-  deselect();
-  renderPrizes();
-  save();
+  if(!confirm('Reset all winners?')) return;
+  prizes.forEach(p=>{p.winners=[];}); deselect(); renderPrizes(); save();
 }
 
-// ══════════════════════════════════════════════
-//  ATTENDEES
-// ══════════════════════════════════════════════
+// ── ATTENDEES ──
 function renderNames() {
-  const list = document.getElementById('name-list');
-  const empty = document.getElementById('empty-state');
-  const badge = document.getElementById('count-badge');
-  const active = getActiveNames();
-  badge.textContent = active.length;
-
-  if (attendees.length === 0) {
-    list.innerHTML = '';
-    empty.style.display = 'block';
-  } else {
-    empty.style.display = 'none';
-    list.innerHTML = attendees.map(n => `
+  const list=document.getElementById('name-list');
+  const empty=document.getElementById('empty-state');
+  const badge=document.getElementById('count-badge');
+  badge.textContent=getActiveNames().length;
+  if (attendees.length===0) { list.innerHTML=''; empty.style.display='block'; }
+  else {
+    empty.style.display='none';
+    list.innerHTML=attendees.map(n=>`
       <div class="name-item">
-        <div class="name-dot ${excluded.has(n) ? 'excluded' : ''}"></div>
-        <div class="name-text ${excluded.has(n) ? 'excluded' : ''}">${n}</div>
-        <button class="excl-btn" onclick="toggleExclude('${n.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">
-          ${excluded.has(n) ? 'Include' : 'Skip'}
-        </button>
-      </div>
-    `).join('');
+        <div class="name-dot ${excluded.has(n)?'excluded':''}"></div>
+        <div class="name-text ${excluded.has(n)?'excluded':''}">${n}</div>
+        <button class="excl-btn" onclick="toggleExclude('${n.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${excluded.has(n)?'Include':'Skip'}</button>
+      </div>`).join('');
   }
   drawWheel();
 }
 
-function toggleExclude(name) {
-  if (excluded.has(name)) excluded.delete(name);
-  else excluded.add(name);
-  renderNames();
-  save();
-}
-
+function toggleExclude(name) { if(excluded.has(name)) excluded.delete(name); else excluded.add(name); renderNames(); save(); }
 function getWheelNames() {
-  // If the currently selected prize is special, use the special names list
-  if (activePrizeIdx !== null && prizes[activePrizeIdx]?.isSpecial) {
-    return specialNames.length > 0 ? [...specialNames] : attendees.filter(n => !excluded.has(n));
-  }
-  // Regular prize or no prize selected — use attendees
-  if (useSpecial && specialNames.length > 0) return [...specialNames];
-  return attendees.filter(n => !excluded.has(n));
+  if (activePrizeIdx!==null && prizes[activePrizeIdx]?.isSpecial && specialNames.length>0) return [...specialNames];
+  if (useSpecial && specialNames.length>0) return [...specialNames];
+  return attendees.filter(n=>!excluded.has(n));
 }
+function getActiveNames() { return attendees.filter(n=>!excluded.has(n)); }
 
-function getActiveNames() {
-  return attendees.filter(n => !excluded.has(n));
-}
-
-// ══════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════
+// ── TABS ──
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    b.classList.toggle('active', (i === 0 && tab === 'attendees') || (i === 1 && tab === 'special'));
-  });
-  document.getElementById('tab-attendees').classList.toggle('show', tab === 'attendees');
-  document.getElementById('tab-special').classList.toggle('show', tab === 'special');
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='attendees')||(i===1&&tab==='special')));
+  document.getElementById('tab-attendees').classList.toggle('show',tab==='attendees');
+  document.getElementById('tab-special').classList.toggle('show',tab==='special');
+  if (tab==='special' && sbUrl && sbKey) fetchRaffleGroups();
 }
 
-function toggleSource(src) {
-  ['attendance','file','type'].forEach(s => {
-    document.getElementById('src-' + s).classList.toggle('active', s === src);
-  });
-}
+function toggleSource(src) { ['attendance','file','type'].forEach(s=>document.getElementById('src-'+s).classList.toggle('active',s===src)); }
 
 function useAttendanceForSpecial() {
-  if (attendees.length === 0) { alert('No attendance list loaded yet.'); return; }
-  specialNames = [...attendees.filter(n => !excluded.has(n))];
-  useSpecial = true;
-  updateActiveSourceNote();
-  drawWheel();
-  save();
+  if(attendees.length===0){alert('No attendance list loaded yet.');return;}
+  specialNames=[...attendees.filter(n=>!excluded.has(n))];
+  useSpecial=true; updateActiveSourceNote(); drawWheel(); save();
 }
 
 function loadManualNames() {
-  const txt = document.getElementById('manual-names').value.trim();
-  if (!txt) return;
-  specialNames = [...new Set(txt.split('\n').map(n => n.trim()).filter(n => n.length > 0))];
-  useSpecial = true;
-  document.getElementById('manual-names').value = '';
-  updateActiveSourceNote();
-  drawWheel();
-  save();
-  alert(`✅ Loaded ${specialNames.length} names into Special Raffle wheel.`);
+  const txt=document.getElementById('manual-names').value.trim();
+  if(!txt) return;
+  specialNames=[...new Set(txt.split('\n').map(n=>n.trim()).filter(n=>n.length>0))];
+  useSpecial=true; document.getElementById('manual-names').value='';
+  updateActiveSourceNote(); drawWheel(); save();
 }
 
 function loadFromFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const text = e.target.result;
-    const names = [...new Set(text.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0))];
-    specialNames = names;
-    useSpecial = true;
-    updateActiveSourceNote();
-    drawWheel();
-    save();
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const names=[...new Set(e.target.result.split(/[\n,]+/).map(n=>n.trim()).filter(n=>n.length>0))];
+    specialNames=names; useSpecial=true; updateActiveSourceNote(); drawWheel(); save();
     alert(`✅ Loaded ${names.length} names from ${file.name}.`);
   };
   reader.readAsText(file);
 }
 
 function updateActiveSourceNote() {
-  const note = document.getElementById('active-source-note');
-  const listEl = document.getElementById('special-name-list');
-
-  if (useSpecial && specialNames.length > 0) {
-    note.style.display = 'block';
-    note.innerHTML = `🎯 Special raffle active: <strong>${specialNames.length} names</strong> on wheel &nbsp;<button onclick="clearSpecialNames()" style="font-size:10px;padding:2px 8px;border:1px solid rgba(239,83,80,0.4);background:rgba(239,83,80,0.08);color:#EF5350;border-radius:6px;cursor:pointer;font-family:Raleway,sans-serif;">Clear all</button>`;
-
-    listEl.innerHTML = specialNames.map((n, i) => `
-      <div class="name-item" style="font-size:12px;padding:6px 10px;">
-        <div class="name-dot"></div>
-        <div class="name-text">${n}</div>
-        <button class="excl-btn" style="color:#EF5350;" onclick="removeSpecialName(${i})">✕</button>
-      </div>
-    `).join('');
-  } else {
-    note.style.display = 'none';
-    listEl.innerHTML = '';
-  }
+  const note=document.getElementById('active-source-note');
+  const listEl=document.getElementById('special-name-list');
+  if(useSpecial&&specialNames.length>0){
+    note.style.display='block';
+    note.innerHTML=`🎯 Special raffle active: <strong>${specialNames.length} names</strong> on wheel &nbsp;<button onclick="clearSpecialNames()" style="font-size:10px;padding:2px 8px;border:1px solid rgba(239,83,80,0.4);background:rgba(239,83,80,0.08);color:#EF5350;border-radius:6px;cursor:pointer;font-family:Raleway,sans-serif;">Clear</button>`;
+    listEl.innerHTML=specialNames.map((n,i)=>`<div class="name-item" style="font-size:12px;padding:6px 10px;"><div class="name-dot"></div><div class="name-text">${n}</div><button class="excl-btn" style="color:#EF5350;" onclick="removeSpecialName(${i})">✕</button></div>`).join('');
+  } else { note.style.display='none'; listEl.innerHTML=''; }
 }
 
-function removeSpecialName(i) {
-  specialNames.splice(i, 1);
-  if (specialNames.length === 0) useSpecial = false;
-  updateActiveSourceNote();
-  drawWheel();
-  save();
-}
+function removeSpecialName(i) { specialNames.splice(i,1); if(specialNames.length===0) useSpecial=false; updateActiveSourceNote(); drawWheel(); save(); }
+function clearSpecialNames() { if(!confirm('Clear all special raffle names?')) return; specialNames=[]; useSpecial=false; updateActiveSourceNote(); drawWheel(); save(); }
+function setRule(val) { winnerRule=val; save(); }
 
-function clearSpecialNames() {
-  if (!confirm('Clear all special raffle names?')) return;
-  specialNames = [];
-  useSpecial = false;
-  updateActiveSourceNote();
-  drawWheel();
-  save();
-}
-
-async function loadFromSupabase() {
-  const url = document.getElementById('sb-url').value.trim();
-  const key = document.getElementById('sb-key').value.trim();
-  const clan = document.getElementById('sb-clan').value.trim();
-  if (!url || !key || !clan) { alert('Please fill in all Supabase fields.'); return; }
-  try {
-    const res = await fetch(`${url}/rest/v1/attendance?clan_id=eq.${clan}&select=member_name`, {
-      headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
-    });
-    const data = await res.json();
-    if (!Array.isArray(data)) { alert('Could not load. Check credentials.'); return; }
-    attendees = [...new Set(data.map(r => r.member_name).filter(Boolean))];
-    excluded.clear();
-    renderNames();
-    save();
-  } catch(e) {
-    alert('Error: ' + e.message);
-  }
-}
-
-// ══════════════════════════════════════════════
-//  WINNER RULE
-// ══════════════════════════════════════════════
-function setRule(val) { winnerRule = val; save(); }
-
-// ══════════════════════════════════════════════
-//  WHEEL DRAWING
-// ══════════════════════════════════════════════
+// ── WHEEL ──
 function drawWheel() {
-  const canvas = document.getElementById('wheel');
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  const cx = w/2, cy = h/2, r = Math.min(cx, cy) - 10;
-  ctx.clearRect(0, 0, w, h);
-
-  const wheelNames = getWheelNames();
-
-  // Filter out already won names if rule = 'any'
-  let displayNames = [...wheelNames];
-  if (activePrizeIdx !== null && winnerRule === 'same') {
-    const won = prizes[activePrizeIdx]?.winners || [];
-    displayNames = wheelNames.filter(n => !won.includes(n));
-  } else if (winnerRule === 'any') {
-    const allWon = prizes.flatMap(p => p.winners);
-    displayNames = wheelNames.filter(n => !allWon.includes(n));
-  }
-
-  if (displayNames.length === 0) {
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI*2);
-    ctx.fillStyle = '#E0F7FA';
-    ctx.fill();
-    ctx.strokeStyle = '#00ACC1'; ctx.lineWidth = 3; ctx.stroke();
-    ctx.fillStyle = '#455A64';
-    ctx.font = 'bold 14px Raleway';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(wheelNames.length === 0 ? 'Add attendees →' : 'All names picked!', cx, cy);
+  const canvas=document.getElementById('wheel');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=Math.min(cx,cy)-10;
+  ctx.clearRect(0,0,w,h);
+  let displayNames=[...getWheelNames()];
+  if(activePrizeIdx!==null&&winnerRule==='same') { const won=prizes[activePrizeIdx]?.winners||[]; displayNames=displayNames.filter(n=>!won.includes(n)); }
+  else if(winnerRule==='any') { const allWon=prizes.flatMap(p=>p.winners); displayNames=displayNames.filter(n=>!allWon.includes(n)); }
+  if(displayNames.length===0){
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle='#E0F7FA'; ctx.fill();
+    ctx.strokeStyle='#00ACC1'; ctx.lineWidth=3; ctx.stroke();
+    ctx.fillStyle='#455A64'; ctx.font='bold 14px Raleway'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(getWheelNames().length===0?'Add attendees →':'All names picked!',cx,cy);
     return;
   }
-
-  const slice = (Math.PI * 2) / displayNames.length;
-  displayNames.forEach((name, i) => {
-    const start = currentAngle + i * slice;
-    const end = start + slice;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, start, end);
-    ctx.closePath();
-    ctx.fillStyle = COLORS[i % COLORS.length];
-    ctx.fill();
-    ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(start + slice/2);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = 'white';
-    const fs = displayNames.length > 20 ? 9 : displayNames.length > 12 ? 11 : 13;
-    ctx.font = `bold ${fs}px Raleway`;
-    const label = name.split(' ')[0]; // first name only for readability
-    ctx.fillText(label.length > 12 ? label.substring(0,11)+'…' : label, r - 12, 4);
+  const slice=(Math.PI*2)/displayNames.length;
+  displayNames.forEach((name,i)=>{
+    const start=currentAngle+i*slice,end=start+slice;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath();
+    ctx.fillStyle=COLORS[i%COLORS.length]; ctx.fill();
+    ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+slice/2); ctx.textAlign='right';
+    ctx.fillStyle='white';
+    const fs=displayNames.length>20?9:displayNames.length>12?11:13;
+    ctx.font=`bold ${fs}px Raleway`;
+    const label=name.split(' ')[0];
+    ctx.fillText(label.length>12?label.substring(0,11)+'…':label,r-12,4);
     ctx.restore();
   });
-
-  // Center circle
-  ctx.beginPath();
-  ctx.arc(cx, cy, 22, 0, Math.PI*2);
-  ctx.fillStyle = '#1A237E'; ctx.fill();
-  ctx.strokeStyle = '#FDB813'; ctx.lineWidth = 3; ctx.stroke();
-
-  // Pointer (right side)
-  ctx.save();
-  ctx.translate(cx + r + 6, cy);
-  ctx.fillStyle = '#FDB813';
-  ctx.beginPath();
-  ctx.moveTo(0, -14);
-  ctx.lineTo(-22, 0);
-  ctx.lineTo(0, 14);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = '#1A237E'; ctx.lineWidth = 1.5; ctx.stroke();
-  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx,cy,22,0,Math.PI*2); ctx.fillStyle='#1A237E'; ctx.fill(); ctx.strokeStyle='#FDB813'; ctx.lineWidth=3; ctx.stroke();
+  ctx.save(); ctx.translate(cx+r+6,cy); ctx.fillStyle='#FDB813';
+  ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(-22,0); ctx.lineTo(0,14); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#1A237E'; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
 }
 
-// ══════════════════════════════════════════════
-//  SPIN
-// ══════════════════════════════════════════════
+// ── SPIN ──
 function spin() {
-  if (activePrizeIdx === null) { alert('Please select a prize first.'); return; }
-  const prize = prizes[activePrizeIdx];
-  if (prize.winners.length >= prize.maxWinners) { alert('All winners already drawn for this prize!'); return; }
-
-  const wheelNames = getWheelNames();
-  let eligible = [...wheelNames];
-  if (winnerRule === 'same') {
-    eligible = wheelNames.filter(n => !prize.winners.includes(n));
-  } else if (winnerRule === 'any') {
-    const allWon = prizes.flatMap(p => p.winners);
-    eligible = wheelNames.filter(n => !allWon.includes(n));
-  }
-
-  if (eligible.length < 1) { alert('No eligible names left on the wheel!'); return; }
-  if (spinning) return;
-
-  spinning = true;
-  document.getElementById('spin-btn').disabled = true;
-
-  const extra = Math.PI * 2 * (8 + Math.random() * 6);
-  const target = Math.random() * Math.PI * 2;
-  const totalRotation = extra + target;
-  const duration = 4000 + Math.random() * 2000;
-  const start = performance.now();
-  const startAngle = currentAngle;
-
-  function ease(t) { return 1 - Math.pow(1 - t, 4); }
-
-  function step(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    currentAngle = startAngle + totalRotation * ease(progress);
-    drawWheel();
-    if (progress < 1) {
-      animFrame = requestAnimationFrame(step);
-    } else {
-      spinning = false;
-      document.getElementById('spin-btn').disabled = false;
-
-      // Determine winner
-      const slice = (Math.PI * 2) / eligible.length;
-      const finalAngle = currentAngle % (Math.PI * 2);
-      const pointer = ((Math.PI * 2) - finalAngle + Math.PI * 2) % (Math.PI * 2);
-      const idx = Math.floor((pointer / (Math.PI * 2)) * eligible.length) % eligible.length;
-      const winner = eligible[idx];
-      showWinner(winner, prize);
+  if(activePrizeIdx===null){alert('Please select a prize first.');return;}
+  const prize=prizes[activePrizeIdx];
+  if(prize.winners.length>=prize.maxWinners){alert('All winners already drawn for this prize!');return;}
+  let eligible=[...getWheelNames()];
+  if(winnerRule==='same') eligible=eligible.filter(n=>!prize.winners.includes(n));
+  else if(winnerRule==='any') { const allWon=prizes.flatMap(p=>p.winners); eligible=eligible.filter(n=>!allWon.includes(n)); }
+  if(eligible.length<1){alert('No eligible names left!');return;}
+  if(spinning) return;
+  spinning=true; document.getElementById('spin-btn').disabled=true;
+  const extra=Math.PI*2*(8+Math.random()*6);
+  const target=Math.random()*Math.PI*2;
+  const totalRotation=extra+target;
+  const duration=4000+Math.random()*2000;
+  const start=performance.now();
+  const startAngle=currentAngle;
+  function ease(t){return 1-Math.pow(1-t,4);}
+  function step(now){
+    const elapsed=now-start,progress=Math.min(elapsed/duration,1);
+    currentAngle=startAngle+totalRotation*ease(progress); drawWheel();
+    if(progress<1){animFrame=requestAnimationFrame(step);}
+    else {
+      spinning=false; document.getElementById('spin-btn').disabled=false;
+      const slice=(Math.PI*2)/eligible.length;
+      const finalAngle=currentAngle%(Math.PI*2);
+      const pointer=((Math.PI*2)-finalAngle+(Math.PI*2))%(Math.PI*2);
+      const idx=Math.floor((pointer/(Math.PI*2))*eligible.length)%eligible.length;
+      showWinner(eligible[idx],prize);
     }
   }
   requestAnimationFrame(step);
 }
 
-// ══════════════════════════════════════════════
-//  WINNER OVERLAY
-// ══════════════════════════════════════════════
-function showWinner(name, prize) {
-  prize.winners.push(name);
-  renderPrizes();
-  drawWheel();
-  save();
-
-  document.getElementById('overlay-name').textContent = name;
-  document.getElementById('overlay-prize').textContent = '🏆 ' + prize.name;
+function showWinner(name,prize) {
+  prize.winners.push(name); renderPrizes(); drawWheel(); save();
+  document.getElementById('overlay-name').textContent=name;
+  document.getElementById('overlay-prize').textContent='🏆 '+prize.name;
   document.getElementById('winner-overlay').classList.add('show');
   launchConfetti('overlay-confetti');
 }
 
-function dismissOverlay() {
-  document.getElementById('winner-overlay').classList.remove('show');
-  document.getElementById('overlay-confetti').innerHTML = '';
-}
+function dismissOverlay() { document.getElementById('winner-overlay').classList.remove('show'); document.getElementById('overlay-confetti').innerHTML=''; }
 
-// ══════════════════════════════════════════════
-//  CONFETTI
-// ══════════════════════════════════════════════
-function launchConfetti(containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  const colors = ['#FDB813','#00ACC1','#1A237E','#E0F7FA','#ffffff','#F9A825','#4DD0E1'];
-  for (let i = 0; i < 120; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.left = Math.random() * 100 + '%';
-    el.style.background = colors[Math.floor(Math.random() * colors.length)];
-    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-    el.style.width = (6 + Math.random() * 10) + 'px';
-    el.style.height = (6 + Math.random() * 10) + 'px';
-    el.style.animationDuration = (2.5 + Math.random() * 2.5) + 's';
-    el.style.animationDelay = (Math.random() * 0.8) + 's';
+function launchConfetti(id) {
+  const container=document.getElementById(id); container.innerHTML='';
+  const colors=['#FDB813','#00ACC1','#1A237E','#E0F7FA','#ffffff','#F9A825','#4DD0E1'];
+  for(let i=0;i<120;i++){
+    const el=document.createElement('div'); el.className='confetti-piece';
+    el.style.left=Math.random()*100+'%'; el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    el.style.width=(6+Math.random()*10)+'px'; el.style.height=(6+Math.random()*10)+'px';
+    el.style.animationDuration=(2.5+Math.random()*2.5)+'s'; el.style.animationDelay=(Math.random()*0.8)+'s';
     container.appendChild(el);
   }
 }
 
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-loadState();
-renderPrizes();
-renderNames();
-updateActiveSourceNote();
+loadState(); renderPrizes(); renderNames(); updateActiveSourceNote();
 </script>
 </body>
 </html>
