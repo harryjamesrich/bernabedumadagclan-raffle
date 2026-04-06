@@ -719,6 +719,7 @@ textarea.manual-names:focus { border-color: var(--teal); }
     <!-- SPECIAL RAFFLE TAB -->
     <div class="tab-content" id="tab-special">
       <div id="active-source-note" class="active-source-note" style="display:none"></div>
+      <div id="special-name-list" style="margin-bottom:10px;"></div>
 
       <div class="special-source-grid">
         <!-- Option 1: Attendance list -->
@@ -1056,12 +1057,40 @@ function loadFromFile(input) {
 
 function updateActiveSourceNote() {
   const note = document.getElementById('active-source-note');
+  const listEl = document.getElementById('special-name-list');
+
   if (useSpecial && specialNames.length > 0) {
     note.style.display = 'block';
-    note.textContent = `🎯 Special raffle active: ${specialNames.length} names on wheel`;
+    note.innerHTML = `🎯 Special raffle active: <strong>${specialNames.length} names</strong> on wheel &nbsp;<button onclick="clearSpecialNames()" style="font-size:10px;padding:2px 8px;border:1px solid rgba(239,83,80,0.4);background:rgba(239,83,80,0.08);color:#EF5350;border-radius:6px;cursor:pointer;font-family:Raleway,sans-serif;">Clear all</button>`;
+
+    listEl.innerHTML = specialNames.map((n, i) => `
+      <div class="name-item" style="font-size:12px;padding:6px 10px;">
+        <div class="name-dot"></div>
+        <div class="name-text">${n}</div>
+        <button class="excl-btn" style="color:#EF5350;" onclick="removeSpecialName(${i})">✕</button>
+      </div>
+    `).join('');
   } else {
     note.style.display = 'none';
+    listEl.innerHTML = '';
   }
+}
+
+function removeSpecialName(i) {
+  specialNames.splice(i, 1);
+  if (specialNames.length === 0) useSpecial = false;
+  updateActiveSourceNote();
+  drawWheel();
+  save();
+}
+
+function clearSpecialNames() {
+  if (!confirm('Clear all special raffle names?')) return;
+  specialNames = [];
+  useSpecial = false;
+  updateActiveSourceNote();
+  drawWheel();
+  save();
 }
 
 async function loadFromSupabase() {
